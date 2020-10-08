@@ -1,4 +1,3 @@
-const functions = require('firebase-functions');
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
@@ -172,4 +171,3 @@ app.listen(port,() => {
     console.log(`Server running at port `+port);
   });
 
-  exports.app = functions.https.onRequest(app);
