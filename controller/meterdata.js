@@ -5,7 +5,8 @@ const router = express.Router();
 // const Authmodel = mongoose.model("Auth");
 var blog = require('../model/meterdata.model');
 var water = require('../model/watertank.modal');
-
+var meterconfig = require('../model/meterconfig.model');
+var meterdata=[]
 
 router.post("/postmeterdata", (req, res) => {
    
@@ -13,8 +14,7 @@ let row=req.body.split("&");
 let data={};
 data.created_date=new Date();
 data.blockdata=[];
-
-
+somedata=[]
 for(let i=0;i<row.length;i++){
     let key=row[i].split("=")[0];
     let val=row[i].split("=")[1];
@@ -31,7 +31,7 @@ if(data && data.ID){
 if(data && data.G){
 
     let temp=data.G.split('/');
-
+        
     for(let j=0; j<temp.length;j++){
         let arr=[];
         let encoded=temp[j].substring(10).match(/.{1,8}/g);
@@ -49,38 +49,113 @@ if(data && data.G){
             starting_address: parseInt(temp[j].substring(0,4),16),
             slaveId:parseInt(temp[j].substring(4,6),16),
             modbus_code:parseInt(temp[j].substring(6,8),16),
-            data_lemgth:parseInt(temp[j].substring(8,10),16),
+            data_length:parseInt(temp[j].substring(8,10),16),
         }
-        temp1.actualdata=arr
+        temp1.actualdata=arr;
         data.blockdata.push(temp1);
     }
+
+
+
+for(let k=0;k<data.blockdata.length;k++){
+    let query={
+        address:data.blockdata[k].starting_address.toString(),
+        modbus_code:data.blockdata[k].modbus_code.toString(),
+        slave:data.blockdata[k].slaveId.toString(),
+        // no_register:temp1.data_length/2,
+        data_length:data.blockdata[k].data_length
+    }
+    if(query){
+        meterconfig.find(query,(err,success)=>{
+            if(err|| success==null){
+                // res.send({
+                //     message:"NCK",
+                // })
+                datamani([],data.blockdata.length,k,[])
+
+            }
+            else{
+                // temp1.actualdata=arr;
+
+                if(success && success.length>0 && success[0].parameterlink){
+
+                    // success[0].parameterlink.parameterlink.forEach((element,i)=>{
+                    //     element.value=data.blockdata[k].actualdata[i];
+                    // })
+                    // somedata.push(success[0].parameterlink.parameterlink);
+                    // somedata.push(success[0].parameterlink.parameterlink)
+                    // console.log('here')
+                  let x= datamani(success[0].parameterlink.parameterlink,data.blockdata.length,k,data.blockdata[k].actualdata)
+                    // console.log(somedata);
+                if(x){
+                    saveindatabase(req,res,data)
+                }
+                    
+                }
+
+            }
+        })
+    }
+
+}
+
+   
+
+
 
 }
 
 // res.send({
 //     data:data
 // })
+// console.log('down')
+// console.log(somedata);
 
-let data1={meter:data};
-console.log(data1)
-let water1= new water(data1)
-water1.save((err, success) => {
-    if (err) {
-        console.log(err)
-        res.send({
-            message:"NCK",
-        })
-    }
-    else{
-        res.send({
-            message:"ACK",
-        })
-    }
-})
 
 })
 
 
+function saveindatabase(req,res,data){
+    
+ 
+    for(let i=0;i<data.blockdata.length;i++){
+        if(meterdata[i]){
+            data.blockdata[i].actualdata=meterdata[i];
+        }
+    }
+    console.log(data);
+
+    let data1={meter:data};
+    // console.log(data)
+    let water1= new water(data1)
+    water1.save((err, success) => {
+        if (err) {
+            res.send({
+                message:"NCK",
+            })
+        }
+        else{
+            res.send({
+                message:"ACK",
+            })
+        }
+    })
+}
+function datamani(data,totaldata, index,arr){
+
+    data.forEach((element,i)=>{
+        element.value=arr[i];
+    })
+
+    // console.log('here',totaldata,index)
+if(data.length>0){
+    meterdata.push(data);
+}
+    // console.log(meterdata)
+    if(totaldata==index+2){
+        return true;
+    }
+}
 router.get('/getmeterdataall',(req,res)=>{
    
     
@@ -97,7 +172,7 @@ router.get('/getmeterdataall',(req,res)=>{
                 let successs=success.reverse()
                 res.send({
                     error:false,
-                    result:successs.slice(0,10)
+                    result:successs.slice(0,20)
                 })
             }
         })
@@ -179,7 +254,6 @@ router.get('/getsingleblog/:id',(req,res)=>{
     
     if(query._id){
         blog.findById(query._id,(err,success)=>{
-            console.log(err)
             if(err|| success==null){
                 res.send({
                     error:true,
@@ -204,7 +278,6 @@ router.delete('/delsingleblog/:id',(req,res)=>{
     
     if(query._id){
         blog.findOneAndDelete(query,(err,success)=>{
-            console.log(err)
             if(err|| success==null){
                 res.send({
                     error:true,
@@ -224,7 +297,6 @@ router.delete('/delsingleblog/:id',(req,res)=>{
 
 router.put('/updateblog/:id',(req,res)=>{
     let _id=req.params.id;
-    console.log(_id);
     if(_id){
         blog.findById(_id,(err,success)=>{
             if(err|| success==null){
@@ -269,7 +341,6 @@ function floattohex(str) {
     }else{
       for (var i = str.length -1; i >=0; i -= 1) {
         if (str.charCodeAt(i)>255) {
-          console.log('Wrong string parametr'); 
           return false;
         }
         int += str.charCodeAt(i) * multi;

@@ -22,14 +22,30 @@ var Meterconfig=mongoose.Schema({
         type : String,
         required: true
     },
-    parameter:{
+    parameterlink:{
         type : Object,
         required: true
     },
-    userId:{
-        type:String,
+    block_no:{
+        type : Object,
         required: true
     },
+    modbus_code:{
+        type : Object,
+        required: true
+    },
+    no_register:{
+        type : Object,
+        required: true
+    },
+    slave:{
+        type : Object,
+        required: true
+    },
+    // userId:{
+    //     type:String,
+    //     required: true
+    // },
     
 })
 var Meterconfig=mongoose.model("Meterconfig", Meterconfig);

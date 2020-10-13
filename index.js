@@ -21,6 +21,8 @@ var bodyParser1 = require('body-parser');
 const meterdatacontroller=require('./controller/meterdata')
 const authcontroller=require("./controller/auth");
 const meterconfigcontroller=require("./controller/meterconfig");
+const parameter=require("./controller/parameter");
+const parameterlink=require("./controller//parameterlink");
 const port = process.env.PORT || 3001;
 // app.use(bodyparser.urlencoded({
 //     extended: true
@@ -38,7 +40,8 @@ app.get('/hello', (req, res) => {
 app.use("/user", authcontroller);
 app.use("/meter", meterdatacontroller);
 app.use("/meterconfig", meterconfigcontroller);
-
+app.use("/parameter", parameter);
+app.use("/parameterlink", parameterlink);
 
 
 
