@@ -136,7 +136,7 @@ router.put('/updateconfig/:id',(req,res)=>{
                         res.send({
                             error: false,
                             result: success,
-                            message: 'User saved successfully'
+                            message: 'Data Updated successfully'
                         })
                     }
                 })

@@ -29,9 +29,8 @@ if(data && data.ID){
     data.deviceId=parseInt(data.ID.substring(4,8),16);
 }
 if(data && data.G){
-
+    data.G.slice(0, -1);
     let temp=data.G.split('/');
-        
     for(let j=0; j<temp.length;j++){
         let arr=[];
         let encoded=temp[j].substring(10).match(/.{1,8}/g);
@@ -68,29 +67,14 @@ for(let k=0;k<data.blockdata.length;k++){
     if(query){
         meterconfig.find(query,(err,success)=>{
             if(err|| success==null){
-                // res.send({
-                //     message:"NCK",
-                // })
                 datamani([],data.blockdata.length,k,[])
-
             }
             else{
-                // temp1.actualdata=arr;
-
                 if(success && success.length>0 && success[0].parameterlink){
-
-                    // success[0].parameterlink.parameterlink.forEach((element,i)=>{
-                    //     element.value=data.blockdata[k].actualdata[i];
-                    // })
-                    // somedata.push(success[0].parameterlink.parameterlink);
-                    // somedata.push(success[0].parameterlink.parameterlink)
-                    // console.log('here')
                   let x= datamani(success[0].parameterlink.parameterlink,data.blockdata.length,k,data.blockdata[k].actualdata)
-                    // console.log(somedata);
                 if(x){
                     saveindatabase(req,res,data)
                 }
-                    
                 }
 
             }
@@ -123,10 +107,7 @@ function saveindatabase(req,res,data){
             data.blockdata[i].actualdata=meterdata[i];
         }
     }
-    console.log(data);
-
     let data1={meter:data};
-    // console.log(data)
     let water1= new water(data1)
     water1.save((err, success) => {
         if (err) {
@@ -144,7 +125,7 @@ function saveindatabase(req,res,data){
 function datamani(data,totaldata, index,arr){
 
     data.forEach((element,i)=>{
-        element.value=arr[i];
+        element.value=arr[i].toFixed(2);
     })
 
     // console.log('here',totaldata,index)
@@ -159,23 +140,42 @@ if(data.length>0){
 router.get('/getmeterdataall',(req,res)=>{
    
     
-    
-    
-        water.find((err,success)=>{
-            if(err|| success==null){
-                res.send({
-                    error:true,
-                    result:err
-                })
-            }
-            else{
-                let successs=success.reverse()
-                res.send({
-                    error:false,
-                    result:successs.slice(0,20)
-                })
-            }
-        })
+    let query=water.find().sort({$natural:-1}).limit(20);
+    query.exec(function(err, results) {
+        if (err|| results==null) { 
+            res.send({
+                error:true,
+                result:err
+            })
+        }
+       
+        else {
+            // let successs=results.reverse()
+            res.send({
+                error:false,
+                result:results
+            })
+           // results.reverse(); // put the results into the desired order
+           // results.forEach(function(result) {
+                // do something with each result
+           // });
+        }
+    });
+        // water.find((err,success)=>{
+        //     if(err|| success==null){
+        //         res.send({
+        //             error:true,
+        //             result:err
+        //         })
+        //     }
+        //     else{
+        //         let successs=success.reverse()
+        //         res.send({
+        //             error:false,
+        //             result:successs.slice(0,20)
+        //         })
+        //     }
+        // })
     
 })
 
