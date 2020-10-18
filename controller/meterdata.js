@@ -102,7 +102,6 @@ for(let k=0;k<data.blockdata.length;k++){
 
 
 function saveindatabase(req,res,data){
- 
     for(let i=0;i<data.blockdata.length;i++){
         if(meterdata[i]){
             data.blockdata[i].actualdata=meterdata[i];
@@ -115,15 +114,21 @@ function saveindatabase(req,res,data){
             res.send({
                 message:"NCK",
             })
+            meterdata=[]
+
         }
         else{
+            meterdata=[]
             res.send({
+                
                 message:"ACK",
             })
         }
     })
 }
 function datamani(data,totaldata, index,arr){
+    console.log(data)
+
     data.forEach((element,i)=>{
         element.value=arr[i].toFixed(2);
     })
