@@ -43,15 +43,17 @@ if(data && data.G){
             }
         }
         
-
-        let temp1={
-            starting_address: parseInt(temp[j].substring(0,4),16),
-            slaveId:parseInt(temp[j].substring(4,6),16),
-            modbus_code:parseInt(temp[j].substring(6,8),16),
-            data_length:parseInt(temp[j].substring(8,10),16),
+        if(parseInt(temp[j].substring(8,10),16)>0){
+            let temp1={
+                starting_address: parseInt(temp[j].substring(0,4),16),
+                slaveId:parseInt(temp[j].substring(4,6),16),
+                modbus_code:parseInt(temp[j].substring(6,8),16),
+                data_length:parseInt(temp[j].substring(8,10),16),
+            }
+            temp1.actualdata=arr;
+            data.blockdata.push(temp1);
         }
-        temp1.actualdata=arr;
-        data.blockdata.push(temp1);
+        
     }
 
 
@@ -64,10 +66,10 @@ for(let k=0;k<data.blockdata.length;k++){
         // no_register:temp1.data_length/2,
         data_length:data.blockdata[k].data_length
     }
-    if(query){
+    if(query.data_length!=null){
         meterconfig.find(query,(err,success)=>{
             if(err|| success==null){
-                datamani([],data.blockdata.length,k,[])
+                datamani([],data.blockdata.length,k,[]);
             }
             else{
                 if(success && success.length>0 && success[0].parameterlink){
@@ -100,7 +102,6 @@ for(let k=0;k<data.blockdata.length;k++){
 
 
 function saveindatabase(req,res,data){
-    
  
     for(let i=0;i<data.blockdata.length;i++){
         if(meterdata[i]){
@@ -123,17 +124,14 @@ function saveindatabase(req,res,data){
     })
 }
 function datamani(data,totaldata, index,arr){
-
     data.forEach((element,i)=>{
         element.value=arr[i].toFixed(2);
     })
 
-    // console.log('here',totaldata,index)
 if(data.length>0){
     meterdata.push(data);
 }
-    // console.log(meterdata)
-    if(totaldata==index+2){
+    if(totaldata==index+1){
         return true;
     }
 }
