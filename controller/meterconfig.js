@@ -124,7 +124,8 @@ router.put('/updateconfig/:id',(req,res)=>{
                 success.modbus_code = req.body.modbus_code ? req.body.modbus_code : success.modbus_code;
                 success.no_register = req.body.no_register ? req.body.no_register : success.no_register;
                 success.slave = req.body.slave ? req.body.slave : success.slave;
-
+                
+                success.type_conversion = req.body.type_conversion ? req.body.type_conversion : success.type_conversion;
 
                 meterconfig.updateOne({_id:_id},success,(err, success1) => {
                     if (err) {

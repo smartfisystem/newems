@@ -22,7 +22,13 @@ var Auth=mongoose.Schema({
     status:{
         type:String,
         required: true
-    }
+    },
+    // meterId: {
+    //     sparse: true,
+    //     required: true,
+    //     type: schema.ObjectId,
+    //     ref: 'meters',
+    // },
     
 })
 var user=mongoose.model("Auth", Auth);
