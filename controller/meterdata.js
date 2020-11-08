@@ -6,6 +6,8 @@ const router = express.Router();
 var blog = require('../model/meterdata.model');
 var water = require('../model/watertank.modal');
 var meterconfig = require('../model/meterconfig.model');
+var auth = require('../model/auth.model');
+
 var meterdata = []
 
 router.post("/postmeterdata", (req, res) => {
@@ -108,23 +110,49 @@ function saveindatabase(req, res, data) {
         }
     }
     let data1 = { meter: data };
-    let water1 = new water(data1)
-    water1.save((err, success) => {
-        if (err) {
+    let water1 = new water(data1);
+        console.log(water1.meter['ID'])
+    let query = auth.find({usermeter: {$elemMatch: {serial_no:water1.meter['ID']}}});
+    query.exec(function (err, results) {
+        if(err){
             res.send({
-                message: "NCK",
+                message: "NO METER LINKING",
             })
-            meterdata = []
-
+            meterdata = [];
         }
-        else {
-            meterdata = []
-            res.send({
-
-                message: "ACK",
-            })
+        else{
+            console.log('result',results);
+            if(results.length>0){
+                water1.userId=results[0]._id;
+                console.log(water1.userId);
+    
+                water1.save((err, success) => {
+                    if (err) {
+                        res.send({
+                            message: "NCK",
+                        })
+                        meterdata = []
+            
+                    }
+                    else {
+                        meterdata = []
+                        res.send({
+            
+                            message: "ACK",
+                        })
+                    }
+                })
+            }
+            else{
+                res.send({
+                    message: "NO METER LINKING",
+                })
+                meterdata = [];
+            }
+            
         }
     })
+   
 }
 function datamani(data,type, totaldata, index, arr) {
     // console.log(data,type)
@@ -141,10 +169,19 @@ function datamani(data,type, totaldata, index, arr) {
         return true;
     }
 }
-router.get('/getmeterdataall', (req, res) => {
+router.get('/getmeterdataall/:id', (req, res) => {
 
-
-    let query = water.find().sort({ $natural: -1 }).limit(20);
+let data={
+    userId:req.params.id
+}
+console.log(data);
+    let query;
+    if(data.userId==78364){
+        query = water.find().sort({ $natural: -1 }).limit(20);
+    }
+    else{
+        query = water.find(data).sort({ $natural: -1 }).limit(20);
+    }
     query.exec(function (err, results) {
         if (err || results == null) {
             res.send({
@@ -332,13 +369,11 @@ router.put('/updateblog/:id', (req, res) => {
 })
 
 function floattohex(str,type) {
-    console.log(str)
     if(type=='inverse'){
        let msb=(str.substring(0, 4));
        let lsb=(str.substring(4, 8));
        str=lsb+msb;
     }
-    console.log(str)
 
     if (str != '00000000') {
         str = '0x' + str

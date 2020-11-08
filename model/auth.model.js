@@ -23,6 +23,9 @@ var Auth=mongoose.Schema({
         type:String,
         required: true
     },
+    usermeter:{
+        type:Object
+    }
     // meterId: {
     //     sparse: true,
     //     required: true,

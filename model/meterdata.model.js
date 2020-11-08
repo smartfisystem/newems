@@ -6,10 +6,16 @@ var Meterdata=mongoose.Schema({
         required: true
     },
 
-    userId:{
-        type:String,
-        required: true
-    },
+    // userId:{
+    //     type:String,
+    //     required: true
+    // },
+    // userId: {
+    //     sparse: true,
+    //     required: true,
+    //     type: schema.ObjectId,
+    //     ref: 'meters',
+    // },
     
 })
 var Meterdata=mongoose.model("Meterdata", Meterdata);

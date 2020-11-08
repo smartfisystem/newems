@@ -7,10 +7,10 @@ var Water=mongoose.Schema({
         required: true
     },
 
-    // userId:{
-    //     type:String,
-    //     required: true
-    // },
+    userId:{
+        type:String,
+        required: true
+    },
     
 })
 var Water=mongoose.model("Water", Water);
