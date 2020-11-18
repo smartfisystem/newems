@@ -30,6 +30,7 @@ router.post("/postmeterdata", (req, res) => {
     if (data && data.ID) {
         data.clientId = parseInt(data.ID.substring(0, 4), 16);
         data.deviceId = parseInt(data.ID.substring(4, 8), 16);
+
     }
 
     if (data && data.G) {
@@ -71,7 +72,7 @@ router.post("/postmeterdata", (req, res) => {
             if (query.data_length != null) {
                 meterconfig.find(query, (err, success) => {
                     if (err || success == null) {
-                        datamani([], success[0].type_conversion,data.blockdata.length, k, []);
+                        datamani([], success[0].type_conversion, data.blockdata.length, k, []);
                     }
                     else {
                         if (success && success.length > 0 && success[0].parameterlink) {
@@ -109,56 +110,117 @@ function saveindatabase(req, res, data) {
             data.blockdata[i].actualdata = meterdata[i];
         }
     }
-    let data1 = { meter: data };
-    let water1 = new water(data1);
-        console.log(water1.meter['ID'])
-    let query = auth.find({usermeter: {$elemMatch: {serial_no:water1.meter['ID']}}});
+    // let data1 = { meter: data };
+    let temp = []
+    for (let i = 0; i < data.blockdata.length; i++) {
+        let a = {
+            deviceId: data.deviceId,
+            clientId: data.clientId,
+            ID: data.ID,
+            G: data.G,
+            DT: data.DT,
+            starting_address: data.blockdata[0].starting_address,
+            slaveId: data.blockdata[0].slaveId,
+            modbus_code: data.blockdata[0].modbus_code,
+            data_length: data.blockdata[0].data_length,
+        }
+        temp.push(a);
+        temp[i].array = data.blockdata[0].actualdata
+
+    }
+
+    // console.log(temp);
+
+
+    // console.log(water1);
+
+
+
+    // console.log('////////////////////////////////////////////////////////////////////////////////');
+    // res.send({
+    //     data: water1,
+    // })
+
+    let query = auth.find({ clientId: temp[0]['clientId'] });
     query.exec(function (err, results) {
-        if(err){
+        if (err) {
             res.send({
                 message: "NO METER LINKING",
             })
             meterdata = [];
         }
-        else{
-            console.log('result',results);
-            if(results.length>0){
-                water1.userId=results[0]._id;
-                console.log(water1.userId);
-    
-                water1.save((err, success) => {
-                    if (err) {
-                        res.send({
-                            message: "NCK",
-                        })
-                        meterdata = []
-            
-                    }
-                    else {
-                        meterdata = []
-                        res.send({
-            
-                            message: "ACK",
-                        })
-                    }
-                })
+        else {
+            // console.log('result',results);
+            if (results.length > 0) {
+                for (let j = 0; j < temp.length; j++) {
+                    let water1 = new water(temp[j] );
+                    console.log(water1)
+                    water1.userId = results[0]._id;
+                    // water1.deviceId = 101
+                    // water1.slaveId = 1
+
+                    // console.log(water1)
+
+                    water1.save((err, success) => {
+
+                        if (err && j == temp.length - 1) {
+                            console.log(err)
+                            res.send({
+                                message: "NCK",
+                            })
+                            meterdata = []
+
+                        }
+                        else if (!err && j == temp.length - 1) {
+                            meterdata = []
+                            res.send({
+                                message: "ACK",
+                                data: success
+                            })
+                        }
+                        // else{
+                        //     meterdata = []
+                        //     res.send({
+                        //         message: "NCK, not all data recorded",
+                        //     })
+                        // }
+                    })
+
+
+                }
+                // console.log(water1)
+                // water1.save((err, success) => {
+                //     if (err) {
+                //         res.send({
+                //             message: "NCK",
+                //         })
+                //         meterdata = []
+
+                //     }
+                //     else {
+                //         meterdata = []
+                //         res.send({
+                //             message: "ACK",
+                //         })
+                //     }
+                // })
             }
-            else{
+            else {
                 res.send({
                     message: "NO METER LINKING",
                 })
                 meterdata = [];
             }
-            
+
         }
     })
-   
+
 }
-function datamani(data,type, totaldata, index, arr) {
+function datamani(data, type, totaldata, index, arr) {
     // console.log(data,type)
 
     data.forEach((element, i) => {
-        element.value = floattohex(arr[i],type).toFixed(2);
+        element.value = floattohex(arr[i], type).toFixed(2);
         // console.log(element)
     })
 
@@ -169,17 +231,20 @@ function datamani(data,type, totaldata, index, arr) {
         return true;
     }
 }
-router.get('/getmeterdataall/:id', (req, res) => {
-
-let data={
-    userId:req.params.id
-}
-console.log(data);
+router.get('/getmeterdataall/:id/:device/:slave', (req, res) => {
+    let data = {
+        userId: req.params.id,
+        deviceId:req.params.device,
+        slaveId:req.params.slave
+    }
+   
+    console.log(data);
     let query;
-    if(data.userId==78364){
+    if (data.userId == 78364) {
         query = water.find().sort({ $natural: -1 }).limit(20);
     }
-    else{
+    else {
+        //  query = water.find({userId: {$elemMatch: {_id:req.params.id}}});
         query = water.find(data).sort({ $natural: -1 }).limit(20);
     }
     query.exec(function (err, results) {
@@ -368,11 +433,11 @@ router.put('/updateblog/:id', (req, res) => {
     }
 })
 
-function floattohex(str,type) {
-    if(type=='inverse'){
-       let msb=(str.substring(0, 4));
-       let lsb=(str.substring(4, 8));
-       str=lsb+msb;
+function floattohex(str, type) {
+    if (type == 'inverse') {
+        let msb = (str.substring(0, 4));
+        let lsb = (str.substring(4, 8));
+        str = lsb + msb;
     }
 
     if (str != '00000000') {

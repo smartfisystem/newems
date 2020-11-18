@@ -116,14 +116,14 @@ router.put('/updateconfig/:id',(req,res)=>{
                 success.meter_manufacture = req.body.meter_manufacture ? req.body.meter_manufacture : success.meter_manufacture;
                 success.meter_model = req.body.meter_model ? req.body.meter_model : success.meter_model;
                 success.data_length = req.body.data_length ? req.body.data_length : success.data_length;
-                success.no_parameter = req.body.no_parameter ? req.body.no_parameter : success.no_parameter;
+                // success.no_parameter = req.body.no_parameter ? req.body.no_parameter : success.no_parameter;
                 success.parameterlink = req.body.parameterlink ? req.body.parameterlink : success.parameterlink;
                 success.address = req.body.address ? req.body.address : success.address;
 
                 success.block_no = req.body.block_no ? req.body.block_no : success.block_no;
                 success.modbus_code = req.body.modbus_code ? req.body.modbus_code : success.modbus_code;
                 success.no_register = req.body.no_register ? req.body.no_register : success.no_register;
-                success.slave = req.body.slave ? req.body.slave : success.slave;
+                // success.slave = req.body.slave ? req.body.slave : success.slave;
                 
                 success.type_conversion = req.body.type_conversion ? req.body.type_conversion : success.type_conversion;
 

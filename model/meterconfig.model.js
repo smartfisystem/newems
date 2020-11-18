@@ -18,10 +18,10 @@ var Meterconfig=mongoose.Schema({
         type : String,
         required: true
     },
-    no_parameter:{
-        type : String,
-        required: true
-    },
+    // no_parameter:{
+    //     type : String,
+    //     required: true
+    // },
     parameterlink:{
         type : Object,
         required: true
@@ -38,10 +38,10 @@ var Meterconfig=mongoose.Schema({
         type : Object,
         required: true
     },
-    slave:{
-        type : Object,
-        required: true
-    },
+    // slave:{
+    //     type : Object,
+    //     required: true
+    // },
     type_conversion:{
         type : String,
         required: true
