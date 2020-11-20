@@ -156,6 +156,8 @@ function saveindatabase(req, res, data) {
                     let water1 = new water(temp[j] );
                     console.log(water1)
                     water1.userId = results[0]._id;
+                    water1.created_date = new Date();
+
                     // water1.deviceId = 101
                     // water1.slaveId = 1
 

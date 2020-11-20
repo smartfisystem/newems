@@ -21,7 +21,10 @@ var Water=mongoose.Schema({
     },
 
 
-
+    created_date:{
+        type:Date,
+        required:true
+    },
 
 
     DT:{
