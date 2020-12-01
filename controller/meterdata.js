@@ -177,7 +177,7 @@ function saveindatabase(req, res, data) {
                             meterdata = []
                             res.send({
                                 message: "ACK",
-                                data: success
+                                // data: success
                             })
                         }
                         // else{
@@ -327,6 +327,50 @@ router.post("/add", (req, res) => {
 
 
 })
+
+
+
+
+
+
+router.post("/gettabledata", (req, res) => {
+    let data = {
+        userId: req.body.userId
+    }
+
+    if (data.userId == 78364) {
+        query = water.find().sort({ $natural: -1 }).limit(20);
+    }
+    else {
+        //  query = water.find({userId: {$elemMatch: {_id:req.params.id}}});
+        query = water.find(data).sort({ $natural: -1 }).limit(100);
+    }
+    query.exec(function (err, results) {
+        if (err || results == null) {
+            res.send({
+                error: true,
+                result: err
+            })
+        }
+
+        else {
+            // let successs=results.reverse()
+            res.send({
+                error: false,
+                result: results
+            })
+            // results.reverse(); // put the results into the desired order
+            // results.forEach(function(result) {
+            // do something with each result
+            // });
+        }
+    });
+
+
+
+})
+
+
 
 router.get('/getblog/:id', (req, res) => {
     let query = {
