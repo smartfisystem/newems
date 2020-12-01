@@ -243,7 +243,7 @@ router.get('/getmeterdataall/:id/:device/:slave', (req, res) => {
     console.log(data);
     let query;
     if (data.deviceId == 78364) {
-        query = water.find().sort({ $natural: -1 }).limit(20);
+        query = water.find().sort({ $natural: -1 }).limit(100);
     }
     else {
         //  query = water.find({userId: {$elemMatch: {_id:req.params.id}}});
