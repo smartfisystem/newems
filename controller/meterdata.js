@@ -31,8 +31,8 @@ router.post("/postmeterdata", (req, res) => {
         data.clientId = parseInt(data.ID.substring(0, 4), 16);
         data.deviceId = parseInt(data.ID.substring(4, 8), 16);
 
-    }
 
+    }
     if (data && data.G) {
         data.G.slice(0, -1);
         let temp = data.G.split('/');
@@ -119,13 +119,13 @@ function saveindatabase(req, res, data) {
             ID: data.ID,
             G: data.G,
             DT: data.DT,
-            starting_address: data.blockdata[0].starting_address,
-            slaveId: data.blockdata[0].slaveId,
-            modbus_code: data.blockdata[0].modbus_code,
-            data_length: data.blockdata[0].data_length,
+            starting_address: data.blockdata[i].starting_address,
+            slaveId: data.blockdata[i].slaveId,
+            modbus_code: data.blockdata[i].modbus_code,
+            data_length: data.blockdata[i].data_length,
         }
         temp.push(a);
-        temp[i].array = data.blockdata[0].actualdata
+        temp[i].array = data.blockdata[i].actualdata
 
     }
 
@@ -154,7 +154,7 @@ function saveindatabase(req, res, data) {
             if (results.length > 0) {
                 for (let j = 0; j < temp.length; j++) {
                     let water1 = new water(temp[j] );
-                    console.log(water1)
+                    // console.log(water1)
                     water1.userId = results[0]._id;
                     water1.created_date = new Date();
 
@@ -242,7 +242,7 @@ router.get('/getmeterdataall/:id/:device/:slave', (req, res) => {
    
     console.log(data);
     let query;
-    if (data.userId == 78364) {
+    if (data.deviceId == 78364) {
         query = water.find().sort({ $natural: -1 }).limit(20);
     }
     else {
