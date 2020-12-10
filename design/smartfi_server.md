@@ -20,7 +20,9 @@ Smartfi system enables multiple IOT devices to send its data to common server. T
 ###  2.1. <a name='Functionalrequirements'></a>Functional requirements
 * A client should be able to upload data periodically
 * A client should be able to retry data upload
-* System will store data marking timestamp. Timestamp granuality is minute
+* A client may provide data timestamp and in this case, system should use the same. 
+* * Timestamp will be in UNIX format (number of epochs)
+* * System will store data marking timestamp, if needed. Timestamp granuality is minute
 * Multiple clients should be able to upload data concurrently
 * System should store data in such a way that consumer can distinguish among data for each source (client IOT device)
 * Only registered client should be able to interact with system 
