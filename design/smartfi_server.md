@@ -61,3 +61,15 @@ Smartfi system enables multiple IOT devices to send its data to common server. T
 ###  2.3. <a name='Non-requirements'></a>Non-requirements
 * Edit of data which is already uploaded is not considered
 * Timestamp granuality more than minute is not considered
+
+## Visualization design flow
+
+### Visualization use-case
+#### Below use-case talks about meter data fetch
+![image info](./data/usecase-Visualize.jpg)
+
+### Dashboard Deployment diagram
+![image info](./data/deployment-dashboard_flow.jpg)
+
+### Dashboard sequence diagram
+![image info](./data/sequencediagram-Dashboard_flow.jpg)
