@@ -2,8 +2,10 @@
 * 1. [Vision](#Vision)
 * 2. [Requirements break-down](#Requirementsbreak-down)
 	* 2.1. [Functional requirements](#Functionalrequirements)
+		* 2.1.1. [Data upload](#Dataupload)
+		* 2.1.2. [Data visualization](#Datavisualization)
 	* 2.2. [Non-functional requirements](#Non-functionalrequirements)
-	* 2.3. [Non-Non requirements](#Non-Nonrequirements)
+	* 2.3. [Non-requirements](#Non-requirements)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -18,6 +20,7 @@ Smartfi system enables multiple IOT devices to send its data to common server. T
 
 ##  2. <a name='Requirementsbreak-down'></a>Requirements break-down
 ###  2.1. <a name='Functionalrequirements'></a>Functional requirements
+####  2.1.1. <a name='Dataupload'></a>Data upload
 * A client should be able to upload data periodically
 * A client should be able to retry data upload
 * Client can upload data in different scaling of units. Server should normalize them in SI scaling of unit before storing to DB
@@ -26,7 +29,24 @@ Smartfi system enables multiple IOT devices to send its data to common server. T
     * System will store data marking timestamp, if needed. Timestamp granuality is minute
 * Multiple clients should be able to upload data concurrently
 * System should store data in such a way that consumer can distinguish among data for each source (client IOT device)
-* Only registered client should be able to interact with system 
+* Only registered client should be able to interact with system
+
+####  2.1.2. <a name='Datavisualization'></a>Data visualization
+* System should be able to generate report and send it via mail
+* Requirement for reports (with miximum, minimum & average) with charts:- Lists of report types
+    * Energy vs cost :-
+        * Energy vs cost data of different meters (Energy Vs Cost Report)
+        * Energy Generation (Chart-Generation Energy Vs Cost)
+        * Energy Consumptions (Chart-Consumption Energy Vs Cost)
+    * Daily Energy Data(i.e. 24hr consumption) with graph
+    * Log Book of energy cnsumptions with graph:-
+        * 15-minutes (Logbook15Minutes)
+        * 30-minutes (Logbook30Minutes)
+        * Hourly (LogbookHourly)
+    * Group wise Energy Report with chart (Group Report)
+    * Shift Energy Report :-
+        * with cost
+        * without cost
 
 
 ###  2.2. <a name='Non-functionalrequirements'></a>Non-functional requirements
