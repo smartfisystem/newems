@@ -34,6 +34,6 @@ Smartfi system enables multiple IOT devices to send its data to common server. T
 * Data upload should be atomic (all or none)
 * Server should handle  malformed data upload request gracefully and it should not impact availability
 
-###  2.3. <a name='Non-Nonrequirements'></a>Non-Non requirements
+###  2.3. <a name='Non-requirements'></a>Non-requirements
 * Edit of data which is already uploaded is not considered
 * Timestamp granuality more than minute is not considered
