@@ -6,6 +6,11 @@
 		* 2.1.2. [Data visualization](#Datavisualization)
 	* 2.2. [Non-functional requirements](#Non-functionalrequirements)
 	* 2.3. [Non-requirements](#Non-requirements)
+* 3. [Visualization design flow](#Visualizationdesignflow)
+	* 3.1. [Visualization use-case](#Visualizationuse-case)
+		* 3.1.1. [Below use-case talks about meter data fetch](#Belowuse-casetalksaboutmeterdatafetch)
+	* 3.2. [Dashboard Deployment diagram](#DashboardDeploymentdiagram)
+	* 3.3. [Dashboard sequence diagram](#Dashboardsequencediagram)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -62,14 +67,14 @@ Smartfi system enables multiple IOT devices to send its data to common server. T
 * Edit of data which is already uploaded is not considered
 * Timestamp granuality more than minute is not considered
 
-## Visualization design flow
+##  3. <a name='Visualizationdesignflow'></a>Visualization design flow
 
-### Visualization use-case
-#### Below use-case talks about meter data fetch
+###  3.1. <a name='Visualizationuse-case'></a>Visualization use-case
+####  3.1.1. <a name='Belowuse-casetalksaboutmeterdatafetch'></a>Below use-case talks about meter data fetch
 ![image info](./data/usecase-Visualize.jpg)
 
-### Dashboard Deployment diagram
+###  3.2. <a name='DashboardDeploymentdiagram'></a>Dashboard Deployment diagram
 ![image info](./data/deployment-dashboard_flow.jpg)
 
-### Dashboard sequence diagram
+###  3.3. <a name='Dashboardsequencediagram'></a>Dashboard sequence diagram
 ![image info](./data/sequencediagram-Dashboard_flow.jpg)
