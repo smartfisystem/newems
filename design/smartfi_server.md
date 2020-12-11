@@ -12,6 +12,8 @@
 		* 4.1.1. [Below use-case talks about meter data fetch](#Belowuse-casetalksaboutmeterdatafetch)
 	* 4.2. [Dashboard Deployment diagram](#DashboardDeploymentdiagram)
 	* 4.3. [Dashboard sequence diagram](#Dashboardsequencediagram)
+* 5. [Data upload design flow](#Datauploaddesignflow)
+	* 5.1. [data flow diagram for upload request by client (IOT device)](#dataflowdiagramforuploadrequestbyclientIOTdevice)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -112,3 +114,13 @@ Smartfi system enables multiple IOT devices to send its data to common server. T
 
 ###  4.3. <a name='Dashboardsequencediagram'></a>Dashboard sequence diagram
 ![image info](./data/sequencediagram-Dashboard_flow.jpg)
+
+
+##  5. <a name='Datauploaddesignflow'></a>Data upload design flow
+###  5.1. <a name='dataflowdiagramforuploadrequestbyclientIOTdevice'></a>data flow diagram for upload request by client (IOT device)
+* Server waits for request
+* Once request comes, it first parses it
+* It validates data and removes all invalid data
+* Server stores valid data to DB
+* At end, server sends response to client according (ACK/NCK) to processing result
+![image info](./data/Statechart_metered_data_upload.jpg)
