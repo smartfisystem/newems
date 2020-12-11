@@ -13,7 +13,7 @@
 	* 4.2. [Dashboard Deployment diagram](#DashboardDeploymentdiagram)
 	* 4.3. [Dashboard sequence diagram](#Dashboardsequencediagram)
 * 5. [Data upload design flow](#Datauploaddesignflow)
-	* 5.1. [data flow diagram for upload request by client (IOT device)](#dataflowdiagramforuploadrequestbyclientIOTdevice)
+	* 5.1. [State machine diagram for upload request by client (IOT device)](#StatemachinediagramforuploadrequestbyclientIOTdevice)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -117,7 +117,7 @@ Smartfi system enables multiple IOT devices to send its data to common server. T
 
 
 ##  5. <a name='Datauploaddesignflow'></a>Data upload design flow
-###  5.1. <a name='dataflowdiagramforuploadrequestbyclientIOTdevice'></a>data flow diagram for upload request by client (IOT device)
+###  5.1. <a name='StatemachinediagramforuploadrequestbyclientIOTdevice'></a>State machine diagram for upload request by client (IOT device)
 * Server waits for request
 * Once request comes, it first parses it
 * It validates data and removes all invalid data
