@@ -17,7 +17,7 @@ router.post("/postmeterdata", (req, res) => {
     data.created_date = new Date();
     data.blockdata = [];
     somedata = [];
-
+    // saving row data with bhanu wala key
     for (let i = 0; i < row.length; i++) {
         let key = row[i].split("=")[0];
         let val = row[i].split("=")[1];
@@ -26,14 +26,22 @@ router.post("/postmeterdata", (req, res) => {
         }
         Object.assign(data, data1)
     }
-
+     //Bhanu
+     if (data && data.DT) {
+        //check
+        //if DT have all zero then use new Date()
+        //else use DT values of time eg-> 5FD5CDC9 hexTouint32-> 1607847369 Unix to ISO->
+    }
+    //  id seperation
     if (data && data.ID) {
         data.clientId = parseInt(data.ID.substring(0, 4), 16);
         data.deviceId = parseInt(data.ID.substring(4, 8), 16);
 
 
     }
+    // condition for g(data)
     if (data && data.G) {
+
         data.G.slice(0, -1);
         let temp = data.G.split('/');
         for (let j = 0; j < temp.length; j++) {
@@ -46,7 +54,7 @@ router.post("/postmeterdata", (req, res) => {
 
                 }
             }
-
+            // saving the address of indivisual blockdata
             if (parseInt(temp[j].substring(8, 10), 16) > 0) {
                 let temp1 = {
                     starting_address: parseInt(temp[j].substring(0, 4), 16),
@@ -60,7 +68,8 @@ router.post("/postmeterdata", (req, res) => {
             }
         }
 
-
+        // findding the user of indivial block data
+        let errcount = 0;
         for (let k = 0; k < data.blockdata.length; k++) {
             let query = {
                 address: data.blockdata[k].starting_address.toString(),
@@ -71,13 +80,22 @@ router.post("/postmeterdata", (req, res) => {
             }
             if (query.data_length != null) {
                 meterconfig.find(query, (err, success) => {
-                    if (err || success == null) {
-                        datamani([], success[0].type_conversion, data.blockdata.length, k, []);
+                    if (err || success.length == 0) {
+                        // sending blank data when there is no user
+                        datamani([], '', data.blockdata.length, k, []);
+                        errcount++;
+                        if (errcount == data.blockdata.length) {
+                            saveindatabase(req, res, [])
+
+                        }
                     }
                     else {
                         if (success && success.length > 0 && success[0].parameterlink) {
+                            // sending data  when there is  user
+
                             let x = datamani(success[0].parameterlink.parameterlink, success[0].type_conversion, data.blockdata.length, k, data.blockdata[k].actualdata)
                             if (x) {
+                                // save data when the last block if excecuted
                                 saveindatabase(req, res, data)
                             }
                         }
@@ -93,7 +111,12 @@ router.post("/postmeterdata", (req, res) => {
 
 
     }
+    else {
 
+        res.send({
+            message: "ACK"
+        })
+    }
     // res.send({
     //     data:data
     // })
@@ -103,143 +126,155 @@ router.post("/postmeterdata", (req, res) => {
 
 })
 
-
+// save in db
 function saveindatabase(req, res, data) {
-    for (let i = 0; i < data.blockdata.length; i++) {
-        if (meterdata[i]) {
-            data.blockdata[i].actualdata = meterdata[i];
-        }
-    }
-    // let data1 = { meter: data };
-    let temp = []
-    for (let i = 0; i < data.blockdata.length; i++) {
-        let a = {
-            deviceId: data.deviceId,
-            clientId: data.clientId,
-            ID: data.ID,
-            G: data.G,
-            DT: data.DT,
-            starting_address: data.blockdata[i].starting_address,
-            slaveId: data.blockdata[i].slaveId,
-            modbus_code: data.blockdata[i].modbus_code,
-            data_length: data.blockdata[i].data_length,
-        }
-        temp.push(a);
-        temp[i].array = data.blockdata[i].actualdata
 
-    }
-
-    // console.log(temp);
+    if (data.length!=0) {
 
 
-    // console.log(water1);
-
-
-
-    // console.log('////////////////////////////////////////////////////////////////////////////////');
-    // res.send({
-    //     data: water1,
-    // })
-
-    let query = auth.find({ clientId: temp[0]['clientId'] });
-    query.exec(function (err, results) {
-        if (err) {
-            res.send({
-                message: "NO METER LINKING",
-            })
-            meterdata = [];
-        }
-        else {
-            // console.log('result',results);
-            if (results.length > 0) {
-                for (let j = 0; j < temp.length; j++) {
-                    let water1 = new water(temp[j] );
-                    // console.log(water1)
-                    water1.userId = results[0]._id;
-                    water1.created_date = new Date();
-
-                    // water1.deviceId = 101
-                    // water1.slaveId = 1
-
-                    // console.log(water1)
-
-                    water1.save((err, success) => {
-
-                        if (err && j == temp.length - 1) {
-                            console.log(err)
-                            res.send({
-                                message: "NCK",
-                            })
-                            meterdata = []
-
-                        }
-                        else if (!err && j == temp.length - 1) {
-                            meterdata = []
-                            res.send({
-                                message: "ACK",
-                                // data: success
-                            })
-                        }
-                        // else{
-                        //     meterdata = []
-                        //     res.send({
-                        //         message: "NCK, not all data recorded",
-                        //     })
-                        // }
-                    })
-
-
-                }
-                // console.log(water1)
-                // water1.save((err, success) => {
-                //     if (err) {
-                //         res.send({
-                //             message: "NCK",
-                //         })
-                //         meterdata = []
-
-                //     }
-                //     else {
-                //         meterdata = []
-                //         res.send({
-                //             message: "ACK",
-                //         })
-                //     }
-                // })
+        for (let i = 0; i < data.blockdata.length; i++) {
+            if (meterdata[i]) {
+                data.blockdata[i].actualdata = meterdata[i];
             }
-            else {
+        }
+        // let data1 = { meter: data };
+        let temp = []
+        for (let i = 0; i < data.blockdata.length; i++) {
+            let a = {
+                deviceId: data.deviceId,
+                clientId: data.clientId,
+                ID: data.ID,
+                G: data.G,
+                DT: data.DT,
+                starting_address: data.blockdata[i].starting_address,
+                slaveId: data.blockdata[i].slaveId,
+                modbus_code: data.blockdata[i].modbus_code,
+                data_length: data.blockdata[i].data_length,
+            }
+            temp.push(a);
+            temp[i].array = data.blockdata[i].actualdata
+
+        }
+
+        // console.log(temp);
+
+
+        // console.log(water1);
+
+
+
+        // console.log('////////////////////////////////////////////////////////////////////////////////');
+        // res.send({
+        //     data: water1,
+        // })
+
+        let query = auth.find({ clientId: temp[0]['clientId'] });
+        query.exec(function (err, results) {
+            if (err) {
                 res.send({
                     message: "NO METER LINKING",
                 })
                 meterdata = [];
             }
+            else {
+                // console.log('result',results);
+                if (results.length > 0) {
+                    for (let j = 0; j < temp.length; j++) {
+                        let water1 = new water(temp[j]);
+                        // console.log(water1)
+                        water1.userId = results[0]._id;
+                        water1.created_date = new Date();
 
-        }
-    })
+                        // water1.deviceId = 101
+                        // water1.slaveId = 1
 
+                        // console.log(water1)
+
+                        water1.save((err, success) => {
+
+                            if (err && j == temp.length - 1) {
+                                console.log(err)
+                                res.send({
+                                    message: "NCK",
+                                })
+                                meterdata = []
+
+                            }
+                            else if (!err && j == temp.length - 1) {
+                                meterdata = []
+                                res.send({
+                                    message: "ACK",
+                                    // data: success
+                                })
+                            }
+                            // else{
+                            //     meterdata = []
+                            //     res.send({
+                            //         message: "NCK, not all data recorded",
+                            //     })
+                            // }
+                        })
+
+
+                    }
+                    // console.log(water1)
+                    // water1.save((err, success) => {
+                    //     if (err) {
+                    //         res.send({
+                    //             message: "NCK",
+                    //         })
+                    //         meterdata = []
+
+                    //     }
+                    //     else {
+                    //         meterdata = []
+                    //         res.send({
+                    //             message: "ACK",
+                    //         })
+                    //     }
+                    // })
+                }
+                else {
+                    res.send({
+                        message: "NO METER LINKING",
+                    })
+                    meterdata = [];
+                }
+
+            }
+        })
+    }
+    else {
+
+        res.send({
+            message: "NCK",
+        })
+    }
 }
-function datamani(data, type, totaldata, index, arr) {
-    // console.log(data,type)
+// format data in for db
 
-    data.forEach((element, i) => {
-        element.value = floattohex(arr[i], type).toFixed(2);
-        // console.log(element)
-    })
+function datamani(data, type, totaldata, index, arr) {
 
     if (data.length > 0) {
+        data.forEach((element, i) => {
+            element.value = floattohex(arr[i], type).toFixed(2);
+            // console.log(element)
+        })
+
         meterdata.push(data);
     }
     if (totaldata == index + 1) {
         return true;
     }
+
 }
 router.get('/getmeterdataall/:id/:device/:slave', (req, res) => {
     let data = {
         userId: req.params.id,
-        deviceId:req.params.device,
-        slaveId:req.params.slave
+        deviceId: req.params.device,
+        slaveId: req.params.slave
     }
-   
+
     console.log(data);
     let query;
     if (data.deviceId == 78364) {
