@@ -26,3 +26,4 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 const Auth=require("./auth.model");
 const Meterdata=require("./meterdata.model");
 const Water=require("./watertank.modal");
+const Test=require("./testtable.model");

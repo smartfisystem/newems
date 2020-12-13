@@ -7,9 +7,29 @@ var blog = require('../model/meterdata.model');
 var water = require('../model/watertank.modal');
 var meterconfig = require('../model/meterconfig.model');
 var auth = require('../model/auth.model');
-
+var test= require('../model/testtable.model')
 var meterdata = []
 
+router.post("/testmeter", (req, res) => {
+    let row = req.body;
+    let data={meter:row}
+    var da = test(data)
+    da.save((err, success) => {
+        if (err) {
+            res.send({
+                error: true,
+                message: 'NCK'
+            })
+        } else {
+            res.send({
+                error: false,
+                message: 'ACK'
+            })
+        }
+    })
+
+
+});
 router.post("/postmeterdata", (req, res) => {
 
     let row = req.body.split("&");
