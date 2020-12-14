@@ -87,6 +87,20 @@ function valid_req(data){
 }
 
 /* 
+This function removes inappropriate values in data.G
+Input:
+    to_remove: Indices of inappropriate values
+   data:  data
+   Return: None. It trims the data
+*/
+function trim_data(to_remove,data){
+    for(let index of to_remove){
+        data.blockdata.splice(index,1);
+        data.length = data.length - 1;
+    }
+    return;
+}
+/* 
 This function filters out inappropriate values in data.G and keeps other info
 Input:
    data:  data
@@ -97,48 +111,78 @@ function filter_data(data){
     if (!data.G) {
         return;
     }
+    let count = data.blockdata.length;
+    let to_remove = new Set();
+    for (let k = 0; k < data.blockdata.length; k++) {
+        // Run the query for each G datablock
+        let query = {
+            address: data.blockdata[k].starting_address.toString(),
+            modbus_code: data.blockdata[k].modbus_code.toString(),
+            // slave: data.blockdata[k].slaveId.toString(),
+            // no_register:temp1.data_length/2,
+            data_length: data.blockdata[k].data_length
+        }
+        if(query.data_length == null){
+            to_remove.add(k);
+            --count;
+            continue;
+        }
+        else {
+            meterconfig.find(query, (err, success) => {
+                if (err || success == null || success.length == 0) {
+                    to_remove.add(k);
+                }
+                --count;
+                if (count == 0){
+                    if(to_remove.size != 0){
+                        trim_data(to_remove, data);
+                    }
+                }
+            });
+        }
 
+    }
 
 }
+
 
 router.post("/postmeterdata", (req, res) => {
     data = parse_req(req.body);
     if (! valid_req(data)){
         //TODO: return NCK
     }
-    //filter_data(data);
+    filter_data(data);
+    // if (data && data.G) {
+    //     for (let k = 0; k < data.blockdata.length; k++) {
+    //         let query = {
+    //             address: data.blockdata[k].starting_address.toString(),
+    //             modbus_code: data.blockdata[k].modbus_code.toString(),
+    //             // slave: data.blockdata[k].slaveId.toString(),
+    //             // no_register:temp1.data_length/2,
+    //             data_length: data.blockdata[k].data_length
+    //         }
+    //         if (query.data_length != null) {
+    //             meterconfig.find(query, (err, success) => {
+    //                 if (err || success == null) {
+    //                     datamani([], success[0].type_conversion, data.blockdata.length, k, []);
+    //                 }
+    //                 else {
+    //                     if (success && success.length > 0 && success[0].parameterlink) {
+    //                         let x = datamani(success[0].parameterlink.parameterlink, success[0].type_conversion, data.blockdata.length, k, data.blockdata[k].actualdata)
+    //                         if (x) {
+    //                             saveindatabase(req, res, data)
+    //                         }
+    //                     }
 
-    if (data && data.G) {
-        for (let k = 0; k < data.blockdata.length; k++) {
-            let query = {
-                address: data.blockdata[k].starting_address.toString(),
-                modbus_code: data.blockdata[k].modbus_code.toString(),
-                // slave: data.blockdata[k].slaveId.toString(),
-                // no_register:temp1.data_length/2,
-                data_length: data.blockdata[k].data_length
-            }
-            if (query.data_length != null) {
-                meterconfig.find(query, (err, success) => {
-                    if (err || success == null) {
-                        datamani([], success[0].type_conversion, data.blockdata.length, k, []);
-                    }
-                    else {
-                        if (success && success.length > 0 && success[0].parameterlink) {
-                            let x = datamani(success[0].parameterlink.parameterlink, success[0].type_conversion, data.blockdata.length, k, data.blockdata[k].actualdata)
-                            if (x) {
-                                saveindatabase(req, res, data)
-                            }
-                        }
+    //                 }
+    //             })
+    //         }
 
-                    }
-                })
-            }
-
-        }
-
+    //     }
 
 
-    }
+
+    //}
 
     // res.send({
     //     data:data
