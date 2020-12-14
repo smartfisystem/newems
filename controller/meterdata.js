@@ -40,11 +40,6 @@ function parse_req(body) {
         data.clientId = parseInt(data.ID.substring(0, 4), 16);
         data.deviceId = parseInt(data.ID.substring(4, 8), 16);
     }
-    else{
-        // TODO: Handle this error
-        console.warn("No client and Device ID found");
-        error_code = -1
-    }
 
     if (data && data.G) {
         // Parse each of Gateway data (G) and keep in blockData data structure
@@ -76,8 +71,43 @@ function parse_req(body) {
     return data;
 }
 
+/* 
+This function validates mandatory fields in data
+Input:
+   data:  Parsed data
+   Returns false if mandatory data is missing, else true
+*/
+
+function valid_req(data){
+    if(!(data && data.clientId && data.deviceId)){
+        // TODO: handle this
+        return false;
+    }
+    return true;
+}
+
+/* 
+This function filters out inappropriate values in data.G and keeps other info
+Input:
+   data:  data
+   Returns data after throwing out invalid data
+Assumption: input data is valid and parsed
+*/
+function filter_data(data){
+    if (!data.G) {
+        return;
+    }
+
+
+}
+
 router.post("/postmeterdata", (req, res) => {
     data = parse_req(req.body);
+    if (! valid_req(data)){
+        //TODO: return NCK
+    }
+    //filter_data(data);
+
     if (data && data.G) {
         for (let k = 0; k < data.blockdata.length; k++) {
             let query = {
