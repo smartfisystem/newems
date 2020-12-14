@@ -95,11 +95,25 @@ Input:
 */
 function trim_data(to_remove,data){
     for(let index of to_remove){
-        data.blockdata.splice(index,1);
-        data.length = data.length - 1;
+        data.blockdata[index] = null
+    }
+    let length = data.blockdata.length;
+    for(let k = length -1; k>=0; --k){
+        if (data.blockdata[k] == null){
+            data.blockdata.splice(k,1);
+            data.length = data.length - 1;    
+        }
+   
     }
     return;
 }
+
+function send_response(res, value){
+    res.send({
+        message: value,
+    })
+}
+
 /* 
 This function filters out inappropriate values in data.G and keeps other info
 Input:
@@ -141,7 +155,12 @@ function filter_data(req, res, data){
                 if (count == 0){
                     if(to_remove.size != 0){
                         trim_data(to_remove, data);
+                    }
+                    if (data.blockdata.length > 0){
                         saveindatabase(req, res, data);
+                    }
+                    else{
+                        // TODO: Handle response to the client
                     }
                 }
             });
