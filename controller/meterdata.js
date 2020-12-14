@@ -10,15 +10,23 @@ var auth = require('../model/auth.model');
 
 var meterdata = []
 
-router.post("/postmeterdata", (req, res) => {
+/* 
+This function parses the req and populate info and return to the caller
+Input:
+   body:  Request body
+   Returns data object having parsed info
+*/
+function parse_req(body) {
 
-    let row = req.body.split("&");
+    let row = body.split("&");
     let data = {};
+    let error_code = 0
     data.created_date = new Date();
     data.blockdata = [];
     somedata = [];
 
     for (let i = 0; i < row.length; i++) {
+        // Extract all key value pair like ID, DT, G etc
         let key = row[i].split("=")[0];
         let val = row[i].split("=")[1];
         let data1 = {
@@ -28,12 +36,18 @@ router.post("/postmeterdata", (req, res) => {
     }
 
     if (data && data.ID) {
+        // Extract ID info
         data.clientId = parseInt(data.ID.substring(0, 4), 16);
         data.deviceId = parseInt(data.ID.substring(4, 8), 16);
-
-
     }
+    else{
+        // TODO: Handle this error
+        console.warn("No client and Device ID found");
+        error_code = -1
+    }
+
     if (data && data.G) {
+        // Parse each of Gateway data (G) and keep in blockData data structure
         data.G.slice(0, -1);
         let temp = data.G.split('/');
         for (let j = 0; j < temp.length; j++) {
@@ -41,7 +55,6 @@ router.post("/postmeterdata", (req, res) => {
             let encoded = temp[j].substring(10).match(/.{1,8}/g);
             if (encoded) {
                 for (let k = 0; k < encoded.length; k++) {
-                    // arr.push(floattohex(encoded[k]))
                     arr.push((encoded[k]))
 
                 }
@@ -59,8 +72,13 @@ router.post("/postmeterdata", (req, res) => {
                 data.blockdata.push(temp1);
             }
         }
+    }
+    return data;
+}
 
-
+router.post("/postmeterdata", (req, res) => {
+    data = parse_req(req.body);
+    if (data && data.G) {
         for (let k = 0; k < data.blockdata.length; k++) {
             let query = {
                 address: data.blockdata[k].starting_address.toString(),
@@ -87,8 +105,6 @@ router.post("/postmeterdata", (req, res) => {
             }
 
         }
-
-
 
 
 
