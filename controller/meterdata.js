@@ -107,7 +107,7 @@ Input:
    Returns data after throwing out invalid data
 Assumption: input data is valid and parsed
 */
-function filter_data(data){
+function filter_data(req, res, data){
     if (!data.G) {
         return;
     }
@@ -132,10 +132,16 @@ function filter_data(data){
                 if (err || success == null || success.length == 0) {
                     to_remove.add(k);
                 }
+                else{
+                    if (success && success.length > 0 && success[0].parameterlink) {
+                        datamani(success[0].parameterlink.parameterlink, success[0].type_conversion, data.blockdata.length, k, data.blockdata[k].actualdata);
+                    }
+                }
                 --count;
                 if (count == 0){
                     if(to_remove.size != 0){
                         trim_data(to_remove, data);
+                        saveindatabase(req, res, data);
                     }
                 }
             });
@@ -151,7 +157,7 @@ router.post("/postmeterdata", (req, res) => {
     if (! valid_req(data)){
         //TODO: return NCK
     }
-    filter_data(data);
+    filter_data(req, res, data);
     // if (data && data.G) {
     //     for (let k = 0; k < data.blockdata.length; k++) {
     //         let query = {
