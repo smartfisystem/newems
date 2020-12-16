@@ -108,7 +108,13 @@ function trim_data(to_remove,data){
     return;
 }
 
-function send_response(res, value){
+function response_handler(res, result){
+    if(result){
+        value = "ACK";
+    }
+    else{
+        value = "NCK"
+    }
     res.send({
         message: value,
     })
@@ -121,9 +127,9 @@ Input:
    Returns data after throwing out invalid data
 Assumption: input data is valid and parsed
 */
-function filter_data(req, res, data){
+function filter_data(req, res, data, response_handler){
     if (!data.G) {
-        return;
+        throw true;
     }
     let count = data.blockdata.length;
     let to_remove = new Set();
@@ -160,7 +166,7 @@ function filter_data(req, res, data){
                         saveindatabase(req, res, data);
                     }
                     else{
-                        // TODO: Handle response to the client
+                        response_handler(res, false);
                     }
                 }
             });
@@ -172,49 +178,16 @@ function filter_data(req, res, data){
 
 
 router.post("/postmeterdata", (req, res) => {
-    data = parse_req(req.body);
-    if (! valid_req(data)){
-        //TODO: return NCK
+    try{
+        data = parse_req(req.body);
+        if (! valid_req(data)){
+           throw false;
+        }
+        filter_data(req, res, data, response_handler);
     }
-    filter_data(req, res, data);
-    // if (data && data.G) {
-    //     for (let k = 0; k < data.blockdata.length; k++) {
-    //         let query = {
-    //             address: data.blockdata[k].starting_address.toString(),
-    //             modbus_code: data.blockdata[k].modbus_code.toString(),
-    //             // slave: data.blockdata[k].slaveId.toString(),
-    //             // no_register:temp1.data_length/2,
-    //             data_length: data.blockdata[k].data_length
-    //         }
-    //         if (query.data_length != null) {
-    //             meterconfig.find(query, (err, success) => {
-    //                 if (err || success == null) {
-    //                     datamani([], success[0].type_conversion, data.blockdata.length, k, []);
-    //                 }
-    //                 else {
-    //                     if (success && success.length > 0 && success[0].parameterlink) {
-    //                         let x = datamani(success[0].parameterlink.parameterlink, success[0].type_conversion, data.blockdata.length, k, data.blockdata[k].actualdata)
-    //                         if (x) {
-    //                             saveindatabase(req, res, data)
-    //                         }
-    //                     }
-
-    //                 }
-    //             })
-    //         }
-
-    //     }
-
-
-
-    //}
-
-    // res.send({
-    //     data:data
-    // })
-    // console.log('down')
-    // console.log(somedata);
-
+    catch(result){
+        response_handler(res, result)
+    }
 
 })
 
