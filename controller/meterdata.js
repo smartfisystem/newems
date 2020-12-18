@@ -170,6 +170,7 @@ function filter_data(req, res, data){
 
 
 router.post("/postmeterdata", (req, res) => {
+    meterdata = [];
     data = parse_req(req.body);
     if (! valid_req(data)){
         //TODO: return NCK
