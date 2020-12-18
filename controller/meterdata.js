@@ -293,7 +293,9 @@ function datamani(data, type, totaldata, index, arr) {
     })
 
     if (data.length > 0) {
-        meterdata.push(data);
+        // meterdata.push(data);
+        // meterdata.push(data);//strore meterdata to data but storing one data only
+        meterdata[index] = data;
     }
     if (totaldata == index + 1) {
         return true;
